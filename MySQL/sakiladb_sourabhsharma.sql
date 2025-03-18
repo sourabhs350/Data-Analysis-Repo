@@ -1,5 +1,65 @@
 /* Sakila DVD Rental Data Analysis */
 
+-- Top 5 movies by total income generated
+SELECT 
+    f.title, SUM(p.amount) AS total_earning
+FROM
+    payment p
+        JOIN
+    rental r ON r.rental_id = p.rental_id
+        JOIN
+    inventory i ON i.inventory_id = r.inventory_id
+        JOIN
+    film f ON f.film_id = i.film_id
+GROUP BY f.film_id
+ORDER BY total_earning DESC
+LIMIT 5;
+
+-- Identify the highest spending customers
+SELECT 
+    c.customer_id,
+    SUM(p.amount) AS total_spending,
+    CONCAT(first_name, ' ', last_name) AS customer_name
+FROM
+    payment p
+        JOIN
+    customer c ON c.customer_id = p.customer_id
+GROUP BY c.customer_id
+ORDER BY total_spending DESC
+LIMIT 5;
+
+-- Identify the top 5 disctrict based on total spending
+
+SELECT 
+    a.district, SUM(p.amount) AS total_spending
+FROM
+    payment p
+        JOIN
+    customer c ON c.customer_id = p.customer_id
+        JOIN
+    address a ON c.address_id = a.address_id
+GROUP BY (c.customer_id)
+ORDER BY total_spending DESC
+limit 5;
+
+-- Identify highest earning movies by film category
+SELECT 
+    cat.name AS Category, SUM(p.amount) AS total_earning
+FROM
+    payment p
+        JOIN
+    rental r ON p.rental_id = r.rental_id
+        JOIN
+    inventory i ON r.inventory_id = i.inventory_id
+        JOIN
+    film f ON i.film_id = f.film_id
+        JOIN
+    film_category fc ON f.film_id = fc.film_id
+        JOIN
+    category cat ON fc.category_id = cat.category_id
+GROUP BY cat.name
+LIMIT 5;
+
 
 -- All films with PG-13 rating and rental rate of 2.99 or lower
 
